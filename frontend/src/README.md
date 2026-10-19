@@ -1,30 +1,47 @@
-# Splitwise+ frontend source
+# SettleMate frontend
 
-A modular React + Vite frontend for the provided expense-splitter Express backend.
+A React + Vite frontend organised by application routing, feature modules, shared UI, and API services.
 
-## Files
-- `main.jsx` — React entry point and global CSS import
-- `App.jsx` — app state, authentication, API calls and page orchestration
-- `services/api.js` — Axios client and auth header handling
-- `utils/format.js` — currency, date, IDs and category helpers
-- `components/` — reusable auth, brand, avatar, sidebar and stat components
-- `pages/Dashboard.jsx` — group dashboard, expenses, balances and settlements
-- `styles.css` — responsive UI styles
+## Setup
 
-## Install / use
-1. Copy this `src` folder into the root of your React + Vite frontend.
-2. Install Axios in the frontend root: `npm install axios`.
-3. Ensure `index.html` points to `/src/main.jsx` (standard Vite default).
-4. Create `.env` in the frontend root:
-   `VITE_API_URL=http://localhost:5000/api`
-5. Start the frontend with `npm run dev`.
+1. Use this `src/` directory in a React + Vite project.
+2. Install dependencies:
 
-## Backend assumptions
-Uses the routes in the supplied backend: `/auth/register`, `/auth/login`, `/auth/me`, `/groups`, `/expenses`, `/balances/group/:groupId`, and `/settlements`.
+   ```bash
+   npm install react-router-dom axios
+   ```
 
-JWT is stored in localStorage as `expense_token`, matching the earlier single-file frontend. Use HTTPS in production and consider a safer token-storage strategy for a production deployment.
+3. Add `.env` at the project root:
+
+   ```env
+   VITE_API_URL=http://localhost:5000/api
+   ```
+
+4. Start the frontend with `npm run dev`.
+
+The Vite project should have an `index.html` with `<div id="root"></div>` and a `package.json` with the usual `dev`, `build`, and `preview` scripts.
+
+## Structure
+
+- `app/`: route table and authentication guard.
+- `components/layout/`: application shell and sidebar.
+- `components/ui/`: reusable avatar, modal, alert, and loading state.
+- `features/auth/`: authentication context and form.
+- `features/groups/`: group creation, group cards, and searchable add-member flow. Only the group creator can add members.
+- `features/expenses/`: expense form.
+- `features/settlements/`: manual settlement form.
+- `pages/`: route-level screens.
+- `lib/`: Axios client, errors, and formatting helpers.
+- `styles/`: global responsive styling.
+
+## Backend endpoints expected
+
+`/auth/register`, `/auth/login`, `/auth/me`, `/groups`, `/groups/:id`, `/groups/:id/members`, `/users/search`, `/expenses`, `/expenses/group/:groupId`, `/balances/group/:groupId`, `/settlements`, `/settlements/group/:groupId`.
 
 ## Notes
-- Add-member UI expects an existing account's MongoDB user ID because the supplied backend's add-member route accepts `userId`.
-- Settlement confirmation records a ledger entry; it does not transfer money.
-- Exact and percentage split forms submit the amounts entered for each member. Ensure those values total the expense amount or 100%, respectively, as required by the backend.
+
+- JWT is stored in localStorage to match the uploaded backend's bearer-token middleware. For a production app, consider secure, HttpOnly cookies and appropriate CSRF protection.
+- The profile page can update the user's name and public profile image URL through `PATCH /auth/me`; email is shown read-only because the current backend does not expose email changes.
+- Settlements are recorded as a ledger entry. They do not trigger a real money transfer.
+- Expense creation supports equal splits, custom exact-amount splits, and custom percentage splits. You can choose which group members participate; exact amounts must total the expense amount, and percentages must total 100%.
+- The backend's `/auth/me` response in the provided version does not return `createdAt`, so the member-since field will display a dash unless the backend response is extended.

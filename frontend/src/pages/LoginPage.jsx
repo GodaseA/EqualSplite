@@ -1,0 +1,9 @@
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../features/auth/AuthContext';
+import AuthForm from '../features/auth/AuthForm';
+export default function LoginPage() {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="loading-screen"><span className="spinner"/></div>;
+  if (user) return <Navigate to="/" replace/>;
+  return <main className="auth-page"><section className="auth-story"><div className="auth-story__brand"><span className="brand__mark">s.</span> settle<span className="brand__accent">mate</span></div><div className="auth-story__content"><span className="eyebrow-pill">SHARED EXPENSES, SORTED</span><h1>Less awkward money talks.<br/><em>More good memories.</em></h1><p>Track group expenses, see who owes what, and settle up without the mental maths.</p><div className="story-card"><div className="story-card__top"><span>Weekend in Goa</span><span className="story-card__badge">● Settled up</span></div><div className="story-card__amount">₹ 4,850 <small>total shared</small></div><div className="story-card__people"><span className="mini-avatar mini-avatar--one">A</span><span className="mini-avatar mini-avatar--two">R</span><span className="mini-avatar mini-avatar--three">M</span><span className="mini-avatar mini-avatar--four">+2</span><span>5 friends · 12 expenses</span></div></div></div><div className="auth-story__foot">✳ Built for the moments worth splitting.</div></section><section className="auth-panel"><div className="auth-panel__inner"><span className="auth-panel__spark">✳</span><span className="eyebrow">WELCOME TO SETTLEMATE</span><h2>Your group wallet,<br/>all in one place.</h2><p className="muted">Sign in to pick up where your group left off.</p><AuthForm/><div className="auth-panel__secure">♢ Your data stays private and secure</div></div></section></main>;
+}
